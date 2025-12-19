@@ -124,11 +124,9 @@ function App() {
     companyName: '',
     contactName: '',
     contactEmail: '',
-    contactPhone: '',
-    autoAccepted: ''
+    contactPhone: ''
   })
   const [selectedTransactions, setSelectedTransactions] = useState([])
-  const [currentTransaction, setCurrentTransaction] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState(null)
   const [submitSuccess, setSubmitSuccess] = useState(false)
@@ -145,8 +143,7 @@ function App() {
     return section1Data.companyName.trim() !== '' &&
            section1Data.contactName.trim() !== '' &&
            section1Data.contactEmail.trim() !== '' &&
-           section1Data.contactPhone.trim() !== '' &&
-           section1Data.autoAccepted.trim() !== ''
+           section1Data.contactPhone.trim() !== ''
   }
 
   const handleContinueToSection2 = () => {
@@ -164,6 +161,7 @@ function App() {
     if (transactionType && !selectedTransactions.find(t => t.type === transactionType)) {
       setSelectedTransactions([...selectedTransactions, {
         type: transactionType,
+        autoAccepted: '',
         direction: '',
         frequency: '',
         requiredOptional: '',
@@ -376,21 +374,6 @@ function App() {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Will this be auto accepted? *
-                    </label>
-                    <Select
-                      name="autoAccepted"
-                      value={section1Data.autoAccepted}
-                      onChange={handleSection1Change}
-                    >
-                      <option value="">-- Select --</option>
-                      <option value="yes">Yes</option>
-                      <option value="no">No</option>
-                    </Select>
-                  </div>
-
                   <div className="flex justify-end pt-4">
                     <Button
                       onClick={handleContinueToSection2}
@@ -418,10 +401,6 @@ function App() {
                     <div>
                       <span className="font-medium text-gray-700">Phone:</span>
                       <p className="text-gray-900">{section1Data.contactPhone}</p>
-                    </div>
-                    <div>
-                      <span className="font-medium text-gray-700">Auto Accepted:</span>
-                      <p className="text-gray-900">{section1Data.autoAccepted === 'yes' ? 'Yes' : 'No'}</p>
                     </div>
                   </div>
                 </div>
@@ -458,9 +437,14 @@ function App() {
 
                   {selectedTransactions.length > 0 && (
                     <div className="space-y-4">
-                      <h3 className="font-semibold text-gray-800 text-lg">
-                        Selected Transaction Types:
-                      </h3>
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold text-gray-800 text-lg">
+                          Selected Transaction Types:
+                        </h3>
+                        <div className="text-sm text-blue-600 bg-blue-50 px-3 py-2 rounded-lg border border-blue-200">
+                          💡 <strong>Need to add more transaction types?</strong> Go back to "Select Transaction Types" above
+                        </div>
+                      </div>
 
                       {selectedTransactions.map((transaction, index) => (
                         <div key={index} className="border border-blue-200 rounded-lg p-4 bg-blue-50">
@@ -476,6 +460,20 @@ function App() {
                           </div>
 
                           <div className="space-y-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Will this be auto accepted? *
+                              </label>
+                              <Select
+                                value={transaction.autoAccepted}
+                                onChange={(e) => handleTransactionChange(index, 'autoAccepted', e.target.value)}
+                              >
+                                <option value="">-- Select --</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                              </Select>
+                            </div>
+
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Direction *
